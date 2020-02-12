@@ -15,14 +15,16 @@ To reproduce the experiments on MNIST, use the following commands:
 ./run.sh exper-final-mnist-biased-cnn-const-lr-1 --gpu <gpu-id>     # CNN with bias, lr = 0.01
 ```
 
-In running the experiments, the working directory is in the form of `./logs/<experiment name>/<date>`, and logs and models will be stored in it. After finishing training the neural network, you need to find out the working directory where the model is stored, and use the following commands to perform adversarial attacks:
+In running the experiments, the working directory is in the form of `./logs/<experiment name>/<date>`, and logs and models will be stored in it. After finishing training the neural network, you can load `<working directory>/res` with `pickle` to get a `dict` object `res`, and use `res['raw'][i]['stats']` to get a `dict` object containing information about the i-th epoch, including training loss (`loss`) and accuracy (`acc`), test loss (`test_loss`) and accuracy (`test_acc`), margin (`q_min`), the norm of the parameter vector (`rho`), the product of weight norms (`norm_prod`), etc.
+
+To perform adversarial attacks, use the following commands :
 
 ```bash
 ./eval.sh eval-final-mnist-l2 <working directory> --gpu <gpu-id>       # L2 attack on the training set 
 ./eval.sh eval-final-mnist-test-l2 <working directory> --gpu <gpu-id>  # L2 attack on the test set
 ```
 
-Note that this will only attack the model at epoch 10000. If you want to attack models at different epochs, you can change the list of epoch IDs corresponding to the key `eid` in `eval-final-mnist-l2.py` and `eval-final-mnist-test-l2.py`. For example, you can change it to `[100, 1000, 10000]` to attack the models at epoch 100, 1000, 10000 (if they are stored in the working directory).
+Note that this will only attack the model at epoch 10000. If you want to attack models at different epochs, you can change the list of epoch IDs corresponding to the key `eid` in `eval-final-mnist-l2.py` and `eval-final-mnist-test-l2.py`. For example, you can change it to `[100, 1000, 10000]` to attack the models at epoch 100, 1000, 10000 (if they are stored in the working directory). After finishing running, you can find a file with name in the form of `<working directory>/<attack name>/<date>/res` and load it with `pickle` to get a `dict` object `res`. Then `res[i]['images']` and `res[i]['errors']` are the adversarial examples and the corresponding errors for the model at the i-th epoch.
 
 To reproduce the experiments on CIFAR-10, use the following commands:
 
